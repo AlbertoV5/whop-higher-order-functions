@@ -1,0 +1,3 @@
+[submodule "templates/quickstart"]
+	path = templates/quickstart
+	url = git@github.com:AlbertoV5/whoof-template.git
