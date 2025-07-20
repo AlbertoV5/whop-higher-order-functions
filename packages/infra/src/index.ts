@@ -50,9 +50,9 @@ export interface CreateAppOptions<
   version: string
   additionalLinks?: any[]
   runMigrator?: boolean
-  appFunctionTransform?: {
-    server?: (args: any) => void
-  }
+  appFunctionTransform?: ConstructorParameters<
+    Sst["aws"]["Nextjs"]
+  >[1]["transform"]
 }
 
 export function createApp<
