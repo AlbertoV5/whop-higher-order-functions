@@ -15,11 +15,9 @@ export interface AppConfig {
   devStudioPort: number
 }
 
-export interface AppDependencies<Sst extends CreateAppSstConstructors> {
+export interface AppInfra<Sst extends CreateAppSstConstructors> {
   vpc: InstanceType<Sst["aws"]["Vpc"]>
   db: InstanceType<Sst["aws"]["Aurora"]>
-  env: Record<string, any>
-  version: string
 }
 
 export interface CreateAppSstConstructors {
@@ -45,11 +43,14 @@ export interface CreateAppOptions<
   Aws extends CreateAppAwsConstructors
 > {
   config: AppConfig
-  dependencies: AppDependencies<Sst>
+  infra: AppInfra<Sst>
   sst: Sst
   aws: Aws
+  environment: Record<string, any>
+  version: string
   additionalLinks?: any[]
-  transform?: {
+  runMigrator?: boolean
+  appFunctionTransform?: {
     server?: (args: any) => void
   }
 }
@@ -62,19 +63,21 @@ export function createApp<
 ): {
   app: InstanceType<Sst["aws"]["Nextjs"]>
   migrator: InstanceType<Sst["aws"]["Function"]>
-  invocation: InstanceType<Aws["lambda"]["Invocation"]>
-  devCommand: InstanceType<Sst["x"]["DevCommand"]>
+  invocation?: InstanceType<Aws["lambda"]["Invocation"]>
+  studioCommand: InstanceType<Sst["x"]["DevCommand"]>
 } {
   const {
-    config,
-    dependencies,
-    additionalLinks = [],
-    transform,
     sst,
     aws,
+    config,
+    infra,
+    version,
+    environment,
+    additionalLinks = [],
+    appFunctionTransform,
+    runMigrator = true,
   } = options
-  const { vpc, db, env, version } = dependencies
-
+  const { vpc, db } = infra
   // Create the Next.js app
   const app = new sst.aws.Nextjs(config.name, {
     link: [db, ...additionalLinks],
@@ -86,12 +89,11 @@ export function createApp<
     vpc: vpc,
     path: config.path,
     environment: {
-      ...env,
+      ...environment,
       NODE_ENV: $dev ? "development" : $app.stage,
     },
-    transform: transform,
+    transform: appFunctionTransform,
   })
-
   // Create the migrator function
   const migrator = new sst.aws.Function(`migrator-${config.name}`, {
     handler: `${config.path}/lib/db/index.migrator`,
@@ -99,7 +101,7 @@ export function createApp<
     vpc,
     timeout: "1 minute",
     environment: {
-      ...env,
+      ...environment,
       NODE_ENV: $app.stage,
     },
     copyFiles: [
@@ -109,34 +111,34 @@ export function createApp<
       },
     ],
   })
-
   // Create the migrator invocation
-  const invocation = new aws.lambda.Invocation(
-    `migrator-${config.name}-invocation`,
-    {
-      input: JSON.stringify({
-        version: version,
-      }),
-      functionName: migrator.name,
-    }
-  )
-
+  let invocation: InstanceType<Aws["lambda"]["Invocation"]> | undefined
+  if (runMigrator) {
+    invocation = new aws.lambda.Invocation(
+      `migrator-${config.name}-invocation`,
+      {
+        input: JSON.stringify({
+          version: version,
+        }),
+        functionName: migrator.name,
+      }
+    )
+  }
   // Create the dev command
-  const devCommand = new sst.x.DevCommand(`studio-${config.name}`, {
+  const studioCommand = new sst.x.DevCommand(`studio-${config.name}`, {
     link: [db],
     dev: {
       command: `bun drizzle-kit studio --port=${config.devStudioPort}`,
     },
     environment: {
-      ...env,
+      ...environment,
       APP: config.name,
     },
   })
-
   return {
     app,
+    studioCommand,
     migrator,
     invocation,
-    devCommand,
   }
 }
