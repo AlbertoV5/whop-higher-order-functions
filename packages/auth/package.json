@@ -1,0 +1,55 @@
+{
+  "name": "@whoof/auth",
+  "version": "0.1.2",
+  "description": "Authentication library for Whop applications",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "build": "bun build src/index.ts --outdir dist --target node --format esm --splitting --external next/headers --external next/cookies --external next/draft-mode --external react && bun run build:types",
+    "build:types": "tsc --emitDeclarationOnly --outDir dist",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "bun run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AlbertoV5/whoof-auth.git"
+  },
+  "keywords": [
+    "authentication",
+    "whop",
+    "auth",
+    "typescript"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "type": "module",
+  "private": false,
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^20.0.0",
+    "typescript": "^5"
+  },
+  "peerDependencies": {
+    "@whop/api": "^0.0.33",
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

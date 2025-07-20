@@ -1,0 +1,35 @@
+# Development files
+*.log
+*.tsbuildinfo
+.eslintcache
+
+# Environment files
+.env*
+!.env.example
+
+# IDE files
+.vscode/
+.idea/
+
+# Testing
+coverage/
+*.lcov
+
+# Build artifacts
+dist/
+out/
+*.tgz
+
+# MacOS
+.DS_Store
+
+# Git
+.git/
+.gitignore
+
+# SST
+sst-env.d.ts
+
+# Database
+*.db
+*.sqlite 

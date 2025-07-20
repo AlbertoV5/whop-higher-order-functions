@@ -1,0 +1,63 @@
+{
+  "name": "@whoof/ui",
+  "version": "0.1.2",
+  "description": "UI components and higher-order functions for Whop application layouts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "build": "bun build src/index.ts --outdir dist --target node --format esm --splitting && bun run build:types",
+    "build:types": "tsc --emitDeclarationOnly --outDir dist",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "bun run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AlbertoV5/whoof-ui.git"
+  },
+  "keywords": [
+    "ui",
+    "components",
+    "whop",
+    "react",
+    "layout",
+    "hoc",
+    "typescript"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "type": "module",
+  "private": false,
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/react": "^19.0.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "@whop/react": "^1.0.0",
+    "frosted-ui": "^1.0.0",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@whoof/auth": "git+git@github.com:AlbertoV5/whoof-auth.git",
+    "@whop/api": "^0.0.33"
+  }
+}

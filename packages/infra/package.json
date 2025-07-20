@@ -1,0 +1,56 @@
+{
+  "name": "@whoof/infra",
+  "version": "0.1.0",
+  "description": "SST application factory functions for consistent patterns in Whop applications",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "build": "bun build src/index.ts --outdir dist --target node --format esm --splitting && bun run build:types",
+    "build:types": "tsc --emitDeclarationOnly --outDir dist",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "bun run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AlbertoV5/whoof-infra.git"
+  },
+  "keywords": [
+    "sst",
+    "serverless",
+    "infrastructure",
+    "whop",
+    "typescript",
+    "aws"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "type": "module",
+  "private": false,
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^20.0.0",
+    "typescript": "^5"
+  },
+  "peerDependencies": {
+    "sst": "^3.0.0",
+    "@aws-sdk/client-lambda": "^3.0.0",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
