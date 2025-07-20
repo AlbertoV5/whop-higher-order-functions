@@ -24,7 +24,7 @@ publish:
 	@read -p "Enter package name to publish: " pkg; \
 	if [ -d "packages/$$pkg" ]; then \
 		echo "Publishing $$pkg..."; \
-		(cd packages/$$pkg && bun publish); \
+		(cd packages/$$pkg && bun publish --access public); \
 	else \
 		echo "Package $$pkg not found!"; \
 	fi
@@ -32,7 +32,7 @@ publish:
 publish-all:
 	@for pkg in $(PACKAGES); do \
 		echo "Publishing $$pkg..."; \
-		(cd packages/$$pkg && bun publish --no-git-checks); \
+		(cd packages/$$pkg && bun publish --access public --no-git-checks); \
 	done
 
 version-patch:
