@@ -23,7 +23,6 @@ export interface AppInfra<Sst extends CreateAppSstConstructors> {
 export interface CreateAppSstConstructors {
   aws: {
     Nextjs: new (...args: any[]) => any
-    NextjsArgs: any
     Function: new (...args: any[]) => any
     Vpc: new (...args: any[]) => any
     Aurora: new (...args: any[]) => any
@@ -51,7 +50,9 @@ export interface CreateAppOptions<
   version: string
   additionalLinks?: any[]
   runMigrator?: boolean
-  appFunctionTransform?: Sst["aws"]["NextjsArgs"]["transform"]
+  appFunctionTransform?: {
+    server?: (args: { memory: string; timeout: string }) => any
+  }
 }
 
 export function createApp<

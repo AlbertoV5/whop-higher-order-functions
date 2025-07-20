@@ -1,6 +1,6 @@
 {
   "name": "@whoof/infra",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "SST application factory functions for consistent patterns in Whop applications",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
