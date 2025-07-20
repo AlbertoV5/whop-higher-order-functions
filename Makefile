@@ -36,22 +36,31 @@ publish-all:
 	done
 
 version-patch:
-	@for pkg in $(PACKAGES); do \
+	@read -p "Enter package name to bump patch version: " pkg; \
+	if [ -d "packages/$$pkg" ]; then \
 		echo "Bumping patch version in $$pkg..."; \
-		(cd packages/$$pkg && bun version patch); \
-	done
+		(cd packages/$$pkg && bun pm version patch); \
+	else \
+		echo "Package $$pkg not found!"; \
+	fi
 
 version-minor:
-	@for pkg in $(PACKAGES); do \
+	@read -p "Enter package name to bump minor version: " pkg; \
+	if [ -d "packages/$$pkg" ]; then \
 		echo "Bumping minor version in $$pkg..."; \
-		(cd packages/$$pkg && bun version minor); \
-	done
+		(cd packages/$$pkg && bun pm version minor); \
+	else \
+		echo "Package $$pkg not found!"; \
+	fi
 
 version-major:
-	@for pkg in $(PACKAGES); do \
+	@read -p "Enter package name to bump major version: " pkg; \
+	if [ -d "packages/$$pkg" ]; then \
 		echo "Bumping major version in $$pkg..."; \
-		(cd packages/$$pkg && bun version major); \
-	done
+		(cd packages/$$pkg && bun pm version major); \
+	else \
+		echo "Package $$pkg not found!"; \
+	fi
 
 changelog:
 	@if ! command -v conventional-changelog &> /dev/null; then \

@@ -1,5 +1,10 @@
-// @ts-nocheck
 // This library provides factory functions for creating SST apps with consistent patterns
+declare const $dev: boolean
+declare const $app: {
+  stage: string
+  name: string
+}
+
 export interface AppConfig {
   name: string
   path: string
@@ -10,32 +15,65 @@ export interface AppConfig {
   devStudioPort: number
 }
 
-export interface AppDependencies {
-  vpc: any
-  db: any
+export interface AppDependencies<Sst extends CreateAppSstConstructors> {
+  vpc: InstanceType<Sst["aws"]["Vpc"]>
+  db: InstanceType<Sst["aws"]["Aurora"]>
   env: Record<string, any>
-  getRepoVersion: () => string
+  version: string
 }
 
-export interface AppResources {
-  app: any
-  migrator: any
-  invocation: any
-  devCommand: any
+export interface CreateAppSstConstructors {
+  aws: {
+    Nextjs: new (...args: any[]) => any
+    Function: new (...args: any[]) => any
+    Vpc: new (...args: any[]) => any
+    Aurora: new (...args: any[]) => any
+  }
+  x: {
+    DevCommand: new (...args: any[]) => any
+  }
 }
 
-export interface CreateAppOptions {
+export interface CreateAppAwsConstructors {
+  lambda: {
+    Invocation: new (...args: any[]) => any
+  }
+}
+
+export interface CreateAppOptions<
+  Sst extends CreateAppSstConstructors,
+  Aws extends CreateAppAwsConstructors
+> {
   config: AppConfig
-  dependencies: AppDependencies
+  dependencies: AppDependencies<Sst>
+  sst: Sst
+  aws: Aws
   additionalLinks?: any[]
   transform?: {
     server?: (args: any) => void
   }
 }
 
-export function createApp(options: CreateAppOptions): AppResources {
-  const { config, dependencies, additionalLinks = [], transform } = options
-  const { vpc, db, env, getRepoVersion } = dependencies
+export function createApp<
+  Sst extends CreateAppSstConstructors,
+  Aws extends CreateAppAwsConstructors
+>(
+  options: CreateAppOptions<Sst, Aws>
+): {
+  app: InstanceType<Sst["aws"]["Nextjs"]>
+  migrator: InstanceType<Sst["aws"]["Function"]>
+  invocation: InstanceType<Aws["lambda"]["Invocation"]>
+  devCommand: InstanceType<Sst["x"]["DevCommand"]>
+} {
+  const {
+    config,
+    dependencies,
+    additionalLinks = [],
+    transform,
+    sst,
+    aws,
+  } = options
+  const { vpc, db, env, version } = dependencies
 
   // Create the Next.js app
   const app = new sst.aws.Nextjs(config.name, {
@@ -77,7 +115,7 @@ export function createApp(options: CreateAppOptions): AppResources {
     `migrator-${config.name}-invocation`,
     {
       input: JSON.stringify({
-        version: getRepoVersion(),
+        version: version,
       }),
       functionName: migrator.name,
     }
