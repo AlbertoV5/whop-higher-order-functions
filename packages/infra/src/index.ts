@@ -9,8 +9,12 @@ export interface AppConfig {
   name: string
   path: string
   domain?: string
+  /**
+   * The port that the dev server will listen on.
+   * The proxy will listen the upstream port on the next port.
+   * The studio will listen on the next port.
+   */
   devPort: number
-  devStudioPort: number
 }
 
 export interface AppInfra<Sst extends CreateAppSstConstructors> {
@@ -77,6 +81,9 @@ export function createApp<
   } = options
   const { vpc, db } = infra
   // Create the Next.js app
+  const proxyPort = config.devPort
+  const upstreamPort = String(proxyPort + 1)
+  const devStudioPort = String(proxyPort + 2)
   const app = new sst.aws.Nextjs(config.name, {
     link: [db, ...additionalLinks],
     domain: config.domain
@@ -89,6 +96,10 @@ export function createApp<
     environment: {
       ...environment,
       NODE_ENV: $dev ? "development" : $app.stage,
+    },
+    dev: {
+      command: `whop-proxy --command 'next dev --turbopack -p ${upstreamPort}' --upstreamPort=${upstreamPort} --proxyPort=${proxyPort}`,
+      url: `http://localhost:${proxyPort}`,
     },
     transform: appFunctionTransform,
   })
@@ -126,7 +137,7 @@ export function createApp<
   const studioCommand = new sst.x.DevCommand(`studio-${config.name}`, {
     link: [db],
     dev: {
-      command: `bun drizzle-kit studio --port=${config.devStudioPort}`,
+      command: `bun drizzle-kit studio --port=${devStudioPort}`,
     },
     environment: {
       ...environment,
