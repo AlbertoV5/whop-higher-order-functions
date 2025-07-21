@@ -8,12 +8,12 @@ import { withExperience } from '@whoof/auth';
 import type { Sdk } from '@whop/api';
 import React from 'react';
 
-type ViewType<TData = Record<string, any>> = React.ComponentType<{
+type ViewType<TData extends Record<string, any>> = React.ComponentType<{
 	experience: WhopExperience
 	user: UserData
 } & TData>
 
-export async function AppBuilder<TData = Record<string, any>>({
+export async function AppBuilder<TData extends Record<string, any>>({
 	children,
 	params,
 	whopSdk,
