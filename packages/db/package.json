@@ -1,6 +1,6 @@
 {
   "name": "@whoof/db",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Database utilities and connection management for Whop applications using AWS RDS Data API and Drizzle ORM",
   "main": "./dist/index.js",
   "module": "./dist/index.js",

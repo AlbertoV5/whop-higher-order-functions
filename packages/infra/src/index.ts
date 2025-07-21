@@ -99,7 +99,7 @@ export function createApp<
     },
     dev: {
       command: `whop-proxy --command 'next dev --turbopack -p ${upstreamPort}' --upstreamPort=${upstreamPort} --proxyPort=${proxyPort}`,
-      url: `http://localhost:${proxyPort}`,
+      // url: `http://localhost:${proxyPort}`,
     },
     transform: appFunctionTransform,
   })

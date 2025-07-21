@@ -2,6 +2,8 @@ import type { PgSchema, PgTableWithColumns } from "drizzle-orm/pg-core"
 import { getDatabaseConnectionHandler } from "./connection"
 import { migrate } from "drizzle-orm/postgres-js/migrator"
 import { Relations, sql } from "drizzle-orm"
+import { existsSync } from "fs"
+import { join } from "path"
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -25,6 +27,26 @@ export function getMigratorHandler<
     databaseConfig,
   })
   const retryMigration = async (maxRetries = 5, baseDelay = 2000) => {
+    // Check if migrations folder exists
+    const migrationsPath = "./migrations"
+    if (!existsSync(migrationsPath)) {
+      console.log("No migrations to run")
+      return {
+        statusCode: 200,
+        body: "No migrations to run",
+      }
+    }
+
+    // Check if meta/_journal.json exists
+    const journalPath = join(migrationsPath, "meta", "_journal.json")
+    if (!existsSync(journalPath)) {
+      console.log("No migrations to run")
+      return {
+        statusCode: 200,
+        body: "No migrations to run",
+      }
+    }
+
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         const targetDb = getDatabase()
@@ -80,7 +102,10 @@ export function getMigratorHandler<
   return async () => {
     const appDatabase = databaseConfig.database
     await createDatabaseIfNotExists(operationalDatabase, appDatabase)
-    await retryMigration()
+    const result = await retryMigration()
+    if (result) {
+      return result
+    }
     return {
       statusCode: 200,
       body: "Migration completed successfully",
