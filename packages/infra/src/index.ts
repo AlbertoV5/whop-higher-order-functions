@@ -9,8 +9,6 @@ export interface AppConfig {
   name: string
   path: string
   domain?: string
-  databaseName: string
-  devDatabase: string
   devPort: number
   devStudioPort: number
 }
