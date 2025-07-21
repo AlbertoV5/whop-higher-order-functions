@@ -27,7 +27,7 @@
     },
     "packages/db": {
       "name": "@whoof/db",
-      "version": "1.0.0",
+      "version": "0.1.1",
       "dependencies": {
         "pg": "^8.16.3",
       },
@@ -45,7 +45,7 @@
     },
     "packages/infra": {
       "name": "@whoof/infra",
-      "version": "0.1.0",
+      "version": "0.1.9",
       "devDependencies": {
         "@types/bun": "latest",
         "@types/node": "^20.0.0",
@@ -61,7 +61,7 @@
       "name": "@whoof/ui",
       "version": "0.1.2",
       "dependencies": {
-        "@whoof/auth": "git+git@github.com:AlbertoV5/whoof-auth.git",
+        "@whoof/auth": "^0.1.2",
         "@whop/api": "^0.0.33",
       },
       "devDependencies": {
@@ -1219,7 +1219,7 @@
 
     "@react-stately/utils/@swc/helpers": ["@swc/helpers@0.5.17", "", { "dependencies": { "tslib": "^2.8.0" } }, "sha512-5IKx/Y13RsYd+sauPb2x+U/xZikHjolzfuDgTAl/Tdf3Q8rslRvC19NKDLgAJQ6wsqADk10ntlv08nPFw/gO/A=="],
 
-    "@whoof/ui/@whoof/auth": ["@whoof/auth@git+ssh://git@github.com:AlbertoV5/whoof-auth.git#f538edacfddce819546e2b241648d6cfa07a1fc8", { "peerDependencies": { "typescript": "^5" } }, "f538edacfddce819546e2b241648d6cfa07a1fc8"],
+    "@whoof/ui/@whoof/auth": ["@whoof/auth@0.1.2", "", { "peerDependencies": { "@whop/api": "^0.0.33", "next": "^15.0.0", "react": "^19.0.0", "typescript": "^5" } }, "sha512-wV/ojoEGY0xp0cn6EWUgoeBt49adj5BwYEf/qM9Ja96r8IabtDcHD9HlrjGbb5fahcLVti813uwsMI7LNjuRig=="],
 
     "@whop/iframe/zod": ["zod@3.22.3", "", {}, "sha512-EjIevzuJRiRPbVH4mGc8nApb/lVLKVpmUhAaR5R5doKGfAnGJ6Gr3CViAVjP+4FWSxCsybeWQdcgCtbX+7oZug=="],
 
