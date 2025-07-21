@@ -1,5 +1,4 @@
 // This library provides factory functions for creating SST apps with consistent patterns
-declare const $dev: boolean
 declare const $app: {
   stage: string
   name: string
@@ -93,10 +92,7 @@ export function createApp<
       : undefined,
     vpc: vpc,
     path: config.path,
-    environment: {
-      ...environment,
-      NODE_ENV: $dev ? "development" : $app.stage,
-    },
+    environment: environment,
     dev: {
       command: `whop-proxy --command 'next dev --turbopack -p ${upstreamPort}' --upstreamPort=${upstreamPort} --proxyPort=${proxyPort}`,
       // url: `http://localhost:${proxyPort}`,

@@ -1,5 +1,5 @@
 import type { PgSchema, PgTableWithColumns } from "drizzle-orm/pg-core"
-import { getDatabaseConnectionHandler } from "./connection"
+import { getDatabasePoolHandler } from "./pool"
 import { migrate } from "drizzle-orm/postgres-js/migrator"
 import { Relations, sql } from "drizzle-orm"
 import { existsSync } from "fs"
@@ -13,6 +13,9 @@ export function getMigratorHandler<
   schema,
   operationalDatabase,
   databaseConfig,
+  dev = {
+    developmentMode: false,
+  },
 }: {
   schema: T
   operationalDatabase: string
@@ -21,11 +24,17 @@ export function getMigratorHandler<
     secretArn: string
     resourceArn: string
   }
+  dev?: {
+    connectionString?: string
+    developmentMode: boolean
+  }
 }) {
-  const getDatabase = getDatabaseConnectionHandler({
+  const getDatabasePool = getDatabasePoolHandler({
     schema,
     databaseConfig,
+    dev,
   })
+
   const retryMigration = async (maxRetries = 5, baseDelay = 2000) => {
     // Check if migrations folder exists
     const migrationsPath = "./migrations"
@@ -49,9 +58,10 @@ export function getMigratorHandler<
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        const targetDb = getDatabase()
-        await migrate(targetDb, {
-          migrationsFolder: "./migrations",
+        await getDatabasePool(async (targetDb) => {
+          await migrate(targetDb, {
+            migrationsFolder: "./migrations",
+          })
         })
         console.log("Migration completed successfully")
         return
@@ -74,23 +84,35 @@ export function getMigratorHandler<
       }
     }
   }
+
   const createDatabaseIfNotExists = async (
     operationalDatabase: string,
     appDatabase: string
   ) => {
-    const mainDb = getDatabase(operationalDatabase)
+    // Create a separate pool handler for the operational database
+    const getOperationalDatabasePool = getDatabasePoolHandler({
+      schema,
+      databaseConfig: {
+        ...databaseConfig,
+        database: operationalDatabase,
+      },
+      dev,
+    })
+
     try {
-      // Check if database already exists
-      const result = await mainDb.execute(
-        sql.raw(`SELECT 1 FROM pg_database WHERE datname = '${appDatabase}'`)
-      )
-      if (result.rows.length === 0) {
-        // Database doesn't exist, create it
-        await mainDb.execute(sql.raw(`CREATE DATABASE "${appDatabase}"`))
-        console.log(`✅ Created database: ${appDatabase}`)
-      } else {
-        console.log(`📋 Database ${appDatabase} already exists`)
-      }
+      await getOperationalDatabasePool(async (mainDb) => {
+        // Check if database already exists
+        const result = await mainDb.execute(
+          sql.raw(`SELECT 1 FROM pg_database WHERE datname = '${appDatabase}'`)
+        )
+        if (result.rows.length === 0) {
+          // Database doesn't exist, create it
+          await mainDb.execute(sql.raw(`CREATE DATABASE "${appDatabase}"`))
+          console.log(`✅ Created database: ${appDatabase}`)
+        } else {
+          console.log(`📋 Database ${appDatabase} already exists`)
+        }
+      })
     } catch (error: any) {
       console.error(
         `⚠️  Error checking/creating database ${appDatabase}:`,
@@ -99,6 +121,7 @@ export function getMigratorHandler<
       throw error
     }
   }
+
   return async () => {
     const appDatabase = databaseConfig.database
     await createDatabaseIfNotExists(operationalDatabase, appDatabase)
