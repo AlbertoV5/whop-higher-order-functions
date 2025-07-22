@@ -1,17 +1,18 @@
 // Retry configuration for Aurora resuming
 const RETRY_CONFIG = {
-  maxAttempts: 3,
-  baseDelay: 2000, // 2 seconds
+  maxAttempts: 5,
+  baseDelay: 1500, // 2 seconds
   maxDelay: 10000, // 10 seconds
 }
 
 // Helper function to check if error is Aurora resuming
 const isAuroraResumingError = (error: any): boolean => {
-  return (
+  const resumingError =
     error?.message?.includes("resuming after being auto-paused") ||
     error?.name === "DatabaseResumingException" ||
     error?.code === "DatabaseResumingException"
-  )
+  console.log("Processing Aurora resuming error", resumingError)
+  return resumingError
 }
 
 // Exponential backoff delay
@@ -33,10 +34,11 @@ export const withAuroraRetry = async <T>(
 
   for (let attempt = 1; attempt <= RETRY_CONFIG.maxAttempts; attempt++) {
     try {
-      return await operation()
+      const result = await operation()
+      console.log("Successfully executed operation")
+      return result
     } catch (error) {
       lastError = error
-
       if (isAuroraResumingError(error) && attempt < RETRY_CONFIG.maxAttempts) {
         const delay = calculateDelay(attempt)
         console.warn(

@@ -36,11 +36,7 @@ export function getDatabasePoolHandler<
     const result = await withAuroraRetry(async () => {
       if (!developmentMode) {
         const db = drizzle(rdsClient, { ...databaseConfig, schema })
-        try {
-          return await action(db)
-        } catch (e) {
-          throw e
-        }
+        return await action(db)
       } else {
         if (!connectionString) {
           throw new Error("connectionString is required in development mode")
