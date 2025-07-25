@@ -1,7 +1,7 @@
 // Retry configuration for Aurora resuming
 const RETRY_CONFIG = {
   maxAttempts: 5,
-  baseDelay: 1500, // 2 seconds
+  baseDelay: 2000, // 2 seconds
   maxDelay: 10000, // 10 seconds
 }
 
@@ -11,7 +11,13 @@ const isAuroraResumingError = (error: any): boolean => {
     error?.message?.includes("resuming after being auto-paused") ||
     error?.name === "DatabaseResumingException" ||
     error?.code === "DatabaseResumingException"
-  console.log("Processing Aurora resuming error", resumingError)
+
+  if (resumingError) {
+    console.log("Processing Aurora resuming error", resumingError)
+  } else {
+    console.log("Not an Aurora resuming error", error)
+  }
+
   return resumingError
 }
 
