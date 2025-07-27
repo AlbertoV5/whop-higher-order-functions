@@ -34,14 +34,17 @@ const sleep = (ms: number): Promise<void> =>
 // Retry wrapper for database operations
 export const withAuroraRetry = async <T>(
   operation: () => Promise<T>,
-  context: string = "database operation"
+  context: string = "database operation",
+  options: { log?: boolean } = { log: false }
 ): Promise<T> => {
   let lastError: any
 
   for (let attempt = 1; attempt <= RETRY_CONFIG.maxAttempts; attempt++) {
     try {
       const result = await operation()
-      console.log("Successfully executed operation")
+      if (options?.log) {
+        console.log(`DB OK: ${context}`)
+      }
       return result
     } catch (error) {
       lastError = error
