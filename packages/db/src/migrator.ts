@@ -16,29 +16,37 @@ export function getMigratorHandler<
   T extends Record<string, PgTableWithColumns<any> | PgSchema | Relations>
 >({
   schema,
-  operationalDatabase,
   databaseConfig,
+  operationalDatabase = "postgres",
   dev = {
     developmentMode: false,
   },
-  runFixtures,
+  onSuccess,
+  onError,
 }: {
   schema: T
-  operationalDatabase: string
   databaseConfig: {
     database: string
     secretArn: string
     resourceArn: string
   }
+  /** Name of the database to use for creating the app's database. Defaults to "postgres". */
+  operationalDatabase?: string
   dev?: {
     connectionString?: string
     developmentMode: boolean
   }
-  runFixtures?: ({
-    status,
-    withDatabasePool,
-  }: {
-    status: 200 | 500
+  /**
+   * A function to run after the migration is complete.
+   * Use it to seed or create fixtures in the app's database.
+   * @param status - The status of the migration.
+   * @param withDatabasePool - A function to get a database pool.
+   */
+  onSuccess?: (props: {
+    withDatabasePool: ReturnType<typeof getDatabasePoolHandler>
+  }) => Promise<void>
+  onError?: (props: {
+    error: Error
     withDatabasePool: ReturnType<typeof getDatabasePoolHandler>
   }) => Promise<void>
 }) {
@@ -48,7 +56,7 @@ export function getMigratorHandler<
     dev,
   })
 
-  const retryMigration = async (
+  const migrateWithRetry = async (
     maxRetries = 5,
     baseDelay = 2000
   ): Promise<MigrationResult> => {
@@ -145,12 +153,18 @@ export function getMigratorHandler<
     }
   }
   return async (): Promise<MigrationResult> => {
-    const appDatabase = databaseConfig.database
-    await createDatabaseIfNotExists(operationalDatabase, appDatabase)
-    const migrationResult = await retryMigration()
-    if (runFixtures) {
-      await runFixtures({
-        status: migrationResult.statusCode,
+    await createDatabaseIfNotExists(
+      operationalDatabase,
+      databaseConfig.database
+    )
+    const migrationResult = await migrateWithRetry()
+    if (onSuccess && migrationResult.statusCode === 200) {
+      await onSuccess({
+        withDatabasePool,
+      })
+    } else if (onError && migrationResult.statusCode === 500) {
+      await onError({
+        error: new Error(migrationResult.body),
         withDatabasePool,
       })
     }
