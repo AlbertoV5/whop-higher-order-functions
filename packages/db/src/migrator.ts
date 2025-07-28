@@ -43,9 +43,11 @@ export function getMigratorHandler<
    * @param withDatabasePool - A function to get a database pool.
    */
   onSuccess?: (props: {
+    schema: T
     withDatabasePool: ReturnType<typeof getDatabasePoolHandler>
   }) => Promise<void>
   onError?: (props: {
+    schema: T
     error: Error
     withDatabasePool: ReturnType<typeof getDatabasePoolHandler>
   }) => Promise<void>
@@ -160,10 +162,12 @@ export function getMigratorHandler<
     const migrationResult = await migrateWithRetry()
     if (onSuccess && migrationResult.statusCode === 200) {
       await onSuccess({
+        schema,
         withDatabasePool,
       })
     } else if (onError && migrationResult.statusCode === 500) {
       await onError({
+        schema,
         error: new Error(migrationResult.body),
         withDatabasePool,
       })
