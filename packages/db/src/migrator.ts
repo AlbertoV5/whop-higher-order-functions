@@ -7,6 +7,11 @@ import { join } from "path"
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
+type MigrationResult = {
+  statusCode: 200 | 500
+  body: string
+}
+
 export function getMigratorHandler<
   T extends Record<string, PgTableWithColumns<any> | PgSchema | Relations>
 >({
@@ -16,6 +21,7 @@ export function getMigratorHandler<
   dev = {
     developmentMode: false,
   },
+  runFixtures,
 }: {
   schema: T
   operationalDatabase: string
@@ -28,6 +34,7 @@ export function getMigratorHandler<
     connectionString?: string
     developmentMode: boolean
   }
+  runFixtures?: (result: MigrationResult) => Promise<void>
 }) {
   const getDatabasePool = getDatabasePoolHandler({
     schema,
@@ -35,7 +42,10 @@ export function getMigratorHandler<
     dev,
   })
 
-  const retryMigration = async (maxRetries = 5, baseDelay = 2000) => {
+  const retryMigration = async (
+    maxRetries = 5,
+    baseDelay = 2000
+  ): Promise<MigrationResult> => {
     // Check if migrations folder exists
     const migrationsPath = "./migrations"
     if (!existsSync(migrationsPath)) {
@@ -64,7 +74,10 @@ export function getMigratorHandler<
           })
         })
         console.log("Migration completed successfully")
-        return
+        return {
+          statusCode: 200,
+          body: "Migration completed successfully",
+        }
       } catch (error: any) {
         const isDatabaseResuming =
           error?.message?.includes("DatabaseResumingException") ||
@@ -82,6 +95,10 @@ export function getMigratorHandler<
         console.error(`Migration failed after ${attempt} attempts:`, error)
         throw error
       }
+    }
+    return {
+      statusCode: 500,
+      body: "Migration failed after 5 attempts",
     }
   }
 
@@ -121,17 +138,13 @@ export function getMigratorHandler<
       throw error
     }
   }
-
-  return async () => {
+  return async (): Promise<MigrationResult> => {
     const appDatabase = databaseConfig.database
     await createDatabaseIfNotExists(operationalDatabase, appDatabase)
-    const result = await retryMigration()
-    if (result) {
-      return result
+    const migrationResult = await retryMigration()
+    if (runFixtures) {
+      await runFixtures(migrationResult)
     }
-    return {
-      statusCode: 200,
-      body: "Migration completed successfully",
-    }
+    return migrationResult
   }
 }
