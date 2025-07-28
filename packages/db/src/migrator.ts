@@ -34,9 +34,15 @@ export function getMigratorHandler<
     connectionString?: string
     developmentMode: boolean
   }
-  runFixtures?: (result: MigrationResult) => Promise<void>
+  runFixtures?: ({
+    status,
+    withDatabasePool,
+  }: {
+    status: 200 | 500
+    withDatabasePool: ReturnType<typeof getDatabasePoolHandler>
+  }) => Promise<void>
 }) {
-  const getDatabasePool = getDatabasePoolHandler({
+  const withDatabasePool = getDatabasePoolHandler({
     schema,
     databaseConfig,
     dev,
@@ -68,7 +74,7 @@ export function getMigratorHandler<
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        await getDatabasePool(async (targetDb) => {
+        await withDatabasePool(async (targetDb) => {
           await migrate(targetDb, {
             migrationsFolder: "./migrations",
           })
@@ -143,7 +149,10 @@ export function getMigratorHandler<
     await createDatabaseIfNotExists(operationalDatabase, appDatabase)
     const migrationResult = await retryMigration()
     if (runFixtures) {
-      await runFixtures(migrationResult)
+      await runFixtures({
+        status: migrationResult.statusCode,
+        withDatabasePool,
+      })
     }
     return migrationResult
   }
