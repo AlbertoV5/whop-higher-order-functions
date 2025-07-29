@@ -1,6 +1,6 @@
 // Retry configuration for Aurora resuming
 const RETRY_CONFIG = {
-  maxAttempts: 5,
+  maxAttempts: 10,
   baseDelay: 1200, // 1.2 seconds
   maxDelay: 5000, // 5 seconds
 }
