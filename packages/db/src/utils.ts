@@ -1,8 +1,8 @@
 // Retry configuration for Aurora resuming
 const RETRY_CONFIG = {
   maxAttempts: 5,
-  baseDelay: 2000, // 2 seconds
-  maxDelay: 10000, // 10 seconds
+  baseDelay: 1200, // 1.2 seconds
+  maxDelay: 5000, // 5 seconds
 }
 
 // Helper function to check if error is Aurora resuming
