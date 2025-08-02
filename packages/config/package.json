@@ -1,7 +1,7 @@
 {
-  "name": "@whoof/auth",
-  "version": "0.1.5",
-  "description": "Authentication library for Whop applications",
+  "name": "@whoof/config",
+  "version": "0.1.0",
+  "description": "Shared models and types for Whop applications with server and client side compatibility",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -19,7 +19,7 @@
   ],
   "scripts": {
     "dev": "bun run src/index.ts",
-    "build": "bun build src/index.ts --outdir dist --target node --format esm --splitting --external next/headers --external next/cookies --external next/draft-mode --external react && bun run build:types",
+    "build": "bun build src/index.ts --outdir dist --target node --format esm --splitting && bun run build:types",
     "build:types": "tsc --emitDeclarationOnly --outDir dist",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "bun run build"
@@ -29,9 +29,12 @@
     "url": "https://github.com/AlbertoV5/whop-higher-order-functions.git"
   },
   "keywords": [
-    "authentication",
+    "models",
+    "types",
+    "subscription",
     "whop",
-    "auth",
+    "server",
+    "client",
     "typescript"
   ],
   "author": "Your Name",
@@ -44,9 +47,6 @@
     "typescript": "^5"
   },
   "peerDependencies": {
-    "@whop/api": "^0.0.33",
-    "next": "^15.0.0",
-    "react": "^19.0.0",
     "typescript": "^5"
   },
   "engines": {
