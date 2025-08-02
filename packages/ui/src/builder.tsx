@@ -69,11 +69,11 @@ export async function AppBuilder<TData extends Record<string, any>>({
 				// Render view based on user status
 				switch (user.userStatus) {
 					case "developer":
-						return <appView.developer {...viewProps} />
+						return <appView.developer {...viewProps}>{children}</appView.developer>
 					case "creator":
-						return <appView.creator {...viewProps} />
+						return <appView.creator {...viewProps}>{children}</appView.creator>
 					case "user":
-						return <appView.user {...viewProps} />
+						return <appView.user {...viewProps}>{children}</appView.user>
 					default:
 						return <Unauthorized />
 				}
