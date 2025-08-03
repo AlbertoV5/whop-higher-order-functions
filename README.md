@@ -1,69 +1,23 @@
-# whoof
+# Whop Higher Order Functions (WHOOF)
 
-## Makefile Commands
+## Introduction
 
-This project uses a `Makefile` to automate common development tasks. Below is a list of available commands and their descriptions.
+Whoof aims to provide tools to create templates / frameworks for creating Whop Applications via their SDK.
 
-### Installation
+## Principles
 
-To install project dependencies:
+### Authentication As Config
 
-```bash
-bun install
-```
+Abstract out Whop authentication and user access methods. Focus on the business logic of your functions and move repetitive tasks out of the way.
 
-### Running the Project
+### Upgrade The Architecture Easily
 
-To run the main application:
+Use OpenNext instead of Vercel while keeping resource creation simple via IaC tools. Bypass Vercel and use AWS directly (or other providers), while keeping resources as config.
 
-```bash
-bun run index.ts
-```
+### Automate The Boring Stuff
 
-### Development Workflow
+Abstract out database config and migrations. Simplify connection configuration and automate migration as much as possible while being able to use both local and remote connections for dev. Improving DevEx and CI/CD.
 
-#### Upgrading Whop Packages
+### App Starts At The Database Level
 
-To upgrade all `@whop/cli` and `@whop/sdk` packages in all workspaces:
-
-```bash
-make upgrade-whop
-```
-
-#### Versioning
-
-To bump the version of all packages, you can use one of the following commands:
-
-- **Patch:** `make version-patch`
-- **Minor:** `make version-minor`
-- **Major:** `make version-major`
-
-#### Publishing
-
-To publish a specific package to npm:
-
-```bash
-make publish
-```
-
-You will be prompted to enter the name of the package you want to publish.
-
-To publish all packages:
-
-```bash
-make publish-all
-```
-
-#### Changelog
-
-To generate a changelog for all packages based on conventional commit messages:
-
-```bash
-make changelog
-```
-
-This command uses `conventional-changelog-cli` to generate a single `CHANGELOG.md` file at the root of the project. If the tool is not installed, it will be installed globally via `bun`.
-
----
-
-This project was created using `bun init` in bun v1.2.18. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+Don't abstract the database logic. Keep queries as close to SQL via Drizzle. These tools should not be reductionistic with the app's data structure.
