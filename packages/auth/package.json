@@ -1,6 +1,6 @@
 {
   "name": "@whoof/auth",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Authentication library for Whop applications",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -44,7 +44,7 @@
     "typescript": "^5"
   },
   "peerDependencies": {
-    "@whop/api": "^0.0.33",
+    "@whop/api": "^0.0.41",
     "next": "^15.0.0",
     "react": "^19.0.0",
     "typescript": "^5"
