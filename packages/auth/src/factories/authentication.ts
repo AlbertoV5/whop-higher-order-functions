@@ -1,42 +1,11 @@
 import { verifyUserToken } from "@whop/api"
-import type { Sdk } from "@whop/api"
-import { getExperienceId } from "./experience"
+import { getExperienceId } from "../context/experience"
 import { headers } from "next/headers"
-
-/** Developer are "super-admin" users */
-export type UserAppStatus = "creator" | "user" | "developer"
-export type WhopExperienceAccessLevel = "admin" | "customer" | "no_access"
-export type UserData = {
-  userId: string
-  userStatus: UserAppStatus
-  userAccessLevel: WhopExperienceAccessLevel
-}
-export type AuthenticatedProps<InputProps extends Record<string, any>> =
-  InputProps & {
-    userData: UserData
-    experienceId: string
-    cronSecret?: string
-    skipUserFetching?: boolean
-  }
-export type CredentialsOptions = {
-  requiredUserStatus?: UserAppStatus
-  requiredAccessLevel?: WhopExperienceAccessLevel
-}
-
-// Configuration types for the factory
-export type PreUserAuthResult = {
-  userData: UserData
-  cronSecret?: string
-}
-
-export type AuthenticationConfig = {
-  sdk: Sdk
-  preUserAuth?: (headersList: Headers) => Promise<PreUserAuthResult | null>
-  getUserStatus: (params: {
-    userId: string
-    accessLevel: WhopExperienceAccessLevel
-  }) => UserAppStatus | null
-}
+import type {
+  AuthenticationConfig,
+  CredentialsOptions,
+  AuthenticatedProps,
+} from "../cache/types"
 
 // Factory function to create Authenticated function with custom configuration
 export function createAuthenticationFunction(config: AuthenticationConfig) {

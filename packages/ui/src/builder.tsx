@@ -1,4 +1,3 @@
-import type { UserData, WhopExperience } from '@whoof/auth';
 import type { ReactNode } from 'react';
 
 import { NoExperience } from './components/NoExperience';
@@ -8,12 +7,13 @@ import { withExperience } from '@whoof/auth';
 import type { Sdk } from '@whop/api';
 import React from 'react';
 
-type ViewType<TData extends Record<string, any>> = React.ComponentType<{
+type WhopExperience = Awaited<ReturnType<Sdk["experiences"]["getExperience"]>>
+type ViewProps<UserData extends Record<string, any>, AppData extends Record<string, any>> = React.ComponentType<{
 	experience: WhopExperience
 	user: UserData
-} & TData>
+} & AppData>
 
-export async function AppBuilder<TData extends Record<string, any>>({
+export async function AppBuilder<UserData extends Record<string, any>, AppData extends Record<string, any>>({
 	children,
 	params,
 	whopSdk,
@@ -26,9 +26,9 @@ export async function AppBuilder<TData extends Record<string, any>>({
 	params: Promise<{ experienceId: string }>
 	whopSdk: Sdk
 	appView: {
-		user: ViewType<TData>;
-		creator: ViewType<TData>;
-		developer: ViewType<TData>;
+		user: ViewProps<UserData, AppData>;
+		creator: ViewProps<UserData, AppData>;
+		developer: ViewProps<UserData, AppData>;
 	}
 	appConfig: {
 		appId: string,
@@ -37,7 +37,7 @@ export async function AppBuilder<TData extends Record<string, any>>({
 	fetchData?: (params: {
 		user: UserData
 		experience: WhopExperience
-	}) => Promise<TData> | null
+	}) => Promise<AppData> | null
 }) {
 	const { appId } = appConfig;
 	const { experienceId } = await params;
@@ -56,7 +56,7 @@ export async function AppBuilder<TData extends Record<string, any>>({
 				let viewProps = {
 					experience,
 					user,
-				} as { experience: WhopExperience, user: UserData } & TData
+				} as { experience: WhopExperience, user: UserData } & AppData
 				if (fetchData) {
 					const data = await fetchData({ user, experience })
 					if (data) {

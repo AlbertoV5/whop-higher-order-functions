@@ -12,7 +12,10 @@
     },
     "packages/auth": {
       "name": "@whoof/auth",
-      "version": "0.1.4",
+      "version": "0.2.1",
+      "dependencies": {
+        "@whoof/config": "^0.1.0",
+      },
       "devDependencies": {
         "@types/bun": "latest",
         "@types/node": "^20.0.0",
@@ -26,9 +29,12 @@
       },
     },
     "packages/config": {
-      "name": "config",
+      "name": "@whoof/config",
+      "version": "0.1.0",
       "devDependencies": {
         "@types/bun": "latest",
+        "@types/node": "^20.0.0",
+        "typescript": "^5",
       },
       "peerDependencies": {
         "typescript": "^5",
@@ -68,9 +74,9 @@
     },
     "packages/ui": {
       "name": "@whoof/ui",
-      "version": "0.1.3",
+      "version": "0.2.3",
       "dependencies": {
-        "@whoof/auth": "^0.1.2",
+        "@whoof/auth": "^0.2.1",
         "@whop/api": "^0.0.33",
       },
       "devDependencies": {
@@ -668,6 +674,8 @@
 
     "@whoof/auth": ["@whoof/auth@workspace:packages/auth"],
 
+    "@whoof/config": ["@whoof/config@workspace:packages/config"],
+
     "@whoof/db": ["@whoof/db@workspace:packages/db"],
 
     "@whoof/infra": ["@whoof/infra@workspace:packages/infra"],
@@ -725,8 +733,6 @@
     "color-name": ["color-name@1.1.4", "", {}, "sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA=="],
 
     "color-string": ["color-string@1.9.1", "", { "dependencies": { "color-name": "^1.0.0", "simple-swizzle": "^0.2.2" } }, "sha512-shrVawQFojnZv6xM40anx4CkoDP+fZsw/ZerEMsW/pyzsRbElpsL/DBVW7q3ExxwusdNXI3lXpuhEZkzs8p5Eg=="],
-
-    "config": ["config@workspace:packages/config"],
 
     "content-disposition": ["content-disposition@1.0.0", "", { "dependencies": { "safe-buffer": "5.2.1" } }, "sha512-Au9nRL8VNUut/XSzbQA38+M78dzP4D+eqg3gfJHMIHHYa3bg067xj1KxMUWj+VULbiZMowKngFFbKczUrNJ1mg=="],
 
@@ -1229,6 +1235,8 @@
     "@react-stately/tree/@swc/helpers": ["@swc/helpers@0.5.17", "", { "dependencies": { "tslib": "^2.8.0" } }, "sha512-5IKx/Y13RsYd+sauPb2x+U/xZikHjolzfuDgTAl/Tdf3Q8rslRvC19NKDLgAJQ6wsqADk10ntlv08nPFw/gO/A=="],
 
     "@react-stately/utils/@swc/helpers": ["@swc/helpers@0.5.17", "", { "dependencies": { "tslib": "^2.8.0" } }, "sha512-5IKx/Y13RsYd+sauPb2x+U/xZikHjolzfuDgTAl/Tdf3Q8rslRvC19NKDLgAJQ6wsqADk10ntlv08nPFw/gO/A=="],
+
+    "@whoof/ui/@whoof/auth": ["@whoof/auth@0.2.1", "", { "dependencies": { "@whoof/config": "^0.1.0" }, "peerDependencies": { "@whop/api": "^0.0.33", "next": "^15.0.0", "react": "^19.0.0", "typescript": "^5" } }, "sha512-sPjiQ9jTKriEMQDXwRp5AJsWljZaR2LlesFjjRYWK1wcNL2IkdWM4KNB7KbB3+d/Y3xsTq0oNwTsLLshi7sjdQ=="],
 
     "@whop/iframe/zod": ["zod@3.22.3", "", {}, "sha512-EjIevzuJRiRPbVH4mGc8nApb/lVLKVpmUhAaR5R5doKGfAnGJ6Gr3CViAVjP+4FWSxCsybeWQdcgCtbX+7oZug=="],
 
