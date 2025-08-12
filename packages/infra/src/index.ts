@@ -105,10 +105,7 @@ export function createApp<
     link: [db],
     vpc,
     timeout: "1 minute",
-    environment: {
-      ...environment,
-      NODE_ENV: $app.stage,
-    },
+    environment: environment,
     copyFiles: [
       {
         from: `${config.path}/lib/db/migrations`,
